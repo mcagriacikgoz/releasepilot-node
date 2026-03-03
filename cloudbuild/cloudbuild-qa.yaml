@@ -1,0 +1,44 @@
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+steps:
+  - name: "node:20"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        npm ci
+        npm test
+
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["build", "-t", "gcr.io/$PROJECT_ID/releasepilot-node:$COMMIT_SHA", "."]
+
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/$PROJECT_ID/releasepilot-node:$COMMIT_SHA"]
+
+      - name: "aquasec/trivy:0.50.1"
+    entrypoint: "sh"
+    args:
+      - "-c"
+      - |
+        trivy image --no-progress --severity HIGH,CRITICAL --exit-code 1 \
+          gcr.io/$PROJECT_ID/releasepilot-node:$COMMIT_SHA
+
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: gcloud
+    args:
+      - "run"
+      - "deploy"
+      - "releasepilot-qa"
+      - "--image"
+      - "gcr.io/$PROJECT_ID/releasepilot-node:$COMMIT_SHA"
+      - "--region"
+      - "europe-west1"
+      - "--platform"
+      - "managed"
+      - "--allow-unauthenticated"
+      - "--set-env-vars"
+      - "ENV=qa,SERVICE_NAME=releasepilot-node,VERSION=qa,COMMIT_SHA=$COMMIT_SHA"
+
+images:
+  - "gcr.io/$PROJECT_ID/releasepilot-node:$COMMIT_SHA"
