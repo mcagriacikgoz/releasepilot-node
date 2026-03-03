@@ -16,6 +16,14 @@ steps:
   - name: "gcr.io/cloud-builders/docker"
     args: ["push", "gcr.io/$PROJECT_ID/releasepilot-node:$COMMIT_SHA"]
 
+      - name: "aquasec/trivy:0.50.1"
+    entrypoint: "sh"
+    args:
+      - "-c"
+      - |
+        trivy image --no-progress --severity HIGH,CRITICAL --exit-code 1 \
+          gcr.io/$PROJECT_ID/releasepilot-node:$COMMIT_SHA
+
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     entrypoint: gcloud
     args:
