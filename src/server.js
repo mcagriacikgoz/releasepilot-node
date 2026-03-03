@@ -55,41 +55,97 @@ app.use((req, res, next) => {
  */
 app.get("/", (req, res) => {
   const html = `<!doctype html>
-<html lang="en">
+<html lang="tr">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>${SERVICE_NAME} – ${ENV}</title>
   <style>
     :root { color-scheme: dark; }
-    body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-           background:#0b1020; color:#e8ebff; }
+    body {
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background:#0b1020;
+      color:#e8ebff;
+    }
+
     .wrap { max-width: 920px; margin: 0 auto; padding: 32px 18px; }
-    .card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 18px; padding: 22px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
-    .pill { display:inline-block; padding: 6px 10px; border-radius: 999px;
-            background: rgba(79, 131, 255, 0.18); border:1px solid rgba(79, 131, 255, 0.35); }
+
+    .card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+
+    .topbar { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+
+    .pill {
+      display:inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(79, 131, 255, 0.18);
+      border:1px solid rgba(79, 131, 255, 0.35);
+    }
+
+    .envbadge {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(34,197,94,0.14);
+      border: 1px solid rgba(34,197,94,0.35);
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(232,235,255,0.92);
+      white-space: nowrap;
+    }
+
     h1 { margin: 10px 0 6px; font-size: 28px; }
     p { margin: 0 0 14px; color: rgba(232,235,255,0.75); }
+
     .grid { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
-    .kv { background: rgba(0,0,0,0.18); border: 1px solid rgba(255,255,255,0.10);
-          border-radius: 14px; padding: 12px; }
+
+    .kv {
+      background: rgba(0,0,0,0.18);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
     .k { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(232,235,255,0.6); }
     .v { margin-top: 6px; font-size: 14px; word-break: break-word; }
+
     .actions { display:flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
-    a.btn { text-decoration:none; color:#e8ebff; padding: 10px 12px; border-radius: 12px;
-            background: rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.14); }
+    a.btn {
+      text-decoration:none;
+      color:#e8ebff;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.14);
+    }
     a.btn:hover { background: rgba(255,255,255,0.12); }
+
     footer { margin-top: 14px; font-size: 12px; color: rgba(232,235,255,0.55); }
+
+    .signature { margin-top: 10px; font-size: 12px; color: rgba(232,235,255,0.7); }
+    .signature strong { color: rgba(232,235,255,0.95); }
+
     @media (max-width:720px){ .grid{ grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="card">
-      <span class="pill">ReleasePilot • Cloud Run</span>
-      <h1>${SERVICE_NAME}</h1>
-      <p>Live environment dashboard (CI/CD proof).</p>
+      <div class="topbar">
+        <div>
+          <span class="pill">ReleasePilot • Cloud Run</span>
+          <h1>${SERVICE_NAME}</h1>
+          <p>Live environment dashboard (CI/CD proof).</p>
+        </div>
+        <div class="envbadge">${ENV}</div>
+      </div>
 
       <div class="grid">
         <div class="kv"><div class="k">Environment</div><div class="v">${ENV}</div></div>
@@ -104,12 +160,19 @@ app.get("/", (req, res) => {
       </div>
 
       <footer>Tip: different branches deploy to different environments (dev/qa/staging).</footer>
+
+      <div class="signature">
+        Created by <strong>Çağrı Açıkgöz</strong><br/>
+        Intel Cloud DevOps Competency
+      </div>
     </div>
   </div>
 </body>
 </html>`;
   res.status(200).type("html").send(html);
 });
+  res.status(200).type("html").send(html);
+;
 
 /**
  * Health checks
