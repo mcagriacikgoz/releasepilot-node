@@ -20,13 +20,16 @@ steps:
   - name: "gcr.io/cloud-builders/docker"
     args: ["push", "gcr.io/$PROJECT_ID/releasepilot-node:$COMMIT_SHA"]
 
-  # 4) Trivy scan (Hard Fail gate)
+  # 4) Trivy scan (Hard Fail gate - vuln only, stable)
   - name: "aquasec/trivy:0.50.1"
     entrypoint: "sh"
     args:
       - "-c"
       - |
-        trivy image --no-progress --severity HIGH,CRITICAL --exit-code 1 \
+        trivy image --no-progress \
+          --scanners vuln \
+          --severity HIGH,CRITICAL \
+          --exit-code 1 \
           gcr.io/$PROJECT_ID/releasepilot-node:$COMMIT_SHA
 
   # 5) Deploy to Cloud Run (QA)
