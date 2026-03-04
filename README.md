@@ -73,7 +73,7 @@ Each environment exposes a simple dashboard on `/` (environment badge + commit S
 
 ## 🧩 Architecture
 
-```mermaid
+```bash
 graph LR
   A[GitHub Push / PR] --> B{Cloud Build Trigger}
   B --> C[npm ci + tests + lint]
