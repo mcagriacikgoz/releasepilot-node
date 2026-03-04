@@ -1,7 +1,7 @@
 options:
   logging: CLOUD_LOGGING_ONLY
+
 steps:
-  # 1) Install deps + run tests (CI)
   - name: "node:20"
     entrypoint: "bash"
     args:
@@ -10,11 +10,9 @@ steps:
         npm ci
         npm test
 
-  # 2) Build Docker image yaptım
   - name: "gcr.io/cloud-builders/docker"
     args: ["build", "-t", "gcr.io/$PROJECT_ID/releasepilot-node:$COMMIT_SHA", "."]
 
-  # 3) Push image
   - name: "gcr.io/cloud-builders/docker"
     args: ["push", "gcr.io/$PROJECT_ID/releasepilot-node:$COMMIT_SHA"]
 
@@ -26,13 +24,12 @@ steps:
         trivy image --no-progress --severity HIGH,CRITICAL --exit-code 1 \
           gcr.io/$PROJECT_ID/releasepilot-node:$COMMIT_SHA
 
-  # 4) Deploy to Cloud Run (DEV) çalıştı
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     entrypoint: gcloud
     args:
       - "run"
       - "deploy"
-      - "releasepilot-dev"
+      - "releasepilot-staging"
       - "--image"
       - "gcr.io/$PROJECT_ID/releasepilot-node:$COMMIT_SHA"
       - "--region"
@@ -41,7 +38,7 @@ steps:
       - "managed"
       - "--allow-unauthenticated"
       - "--set-env-vars"
-      - "ENV=dev,SERVICE_NAME=releasepilot-node,VERSION=dev,COMMIT_SHA=$COMMIT_SHA"
+      - "ENV=staging,SERVICE_NAME=releasepilot-node,VERSION=staging,COMMIT_SHA=$COMMIT_SHA"
 
 images:
   - "gcr.io/$PROJECT_ID/releasepilot-node:$COMMIT_SHA"
